@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Карта мероприятий</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .map-wrapper {
+            width: calc(100% - 70px);
+            margin: 140px auto;
+            background: rgba(0, 0, 0, 0.57);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            position: relative;
+        }
+
+        .map-header {
+            background: rgba(201, 201, 201, 0.22);
+            width: 15%;
+            border-radius: 19px;
+            padding: 15px 25px;
+            text-align: center;
+            margin: 10px 0 31px 55px;
+        }
+
+        .map-header h2 {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 28px;
+            color: #9BB8FF;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        #map {
+            width: 92%;
+            margin-left: 55px;
+            margin-right: 55px;
+            height: 90vh;
+            border-radius: 14px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.54);
+            display: block;
+        }
+
+        .menu-btn img.home-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="user-container" id="userContainer">
+        <div class="user-circle"></div>
+        {% if session.username %}
+            <div class="user-menu" id="userMenu">
+                <a href="{{ url_for('logout') }}">Выйти</a>
+                <a href="{{ url_for('register') }}">Сменить аккаунт</a>
+                {% if session.role == 'organizer' %}
+                    <a href="{{ url_for('add_event') }}">Добавить мероприятие</a>
+                    <a href="{{ url_for('add_tag') }}">Добавить тег</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="user-menu" id="userMenu">
+                <a href="{{ url_for('login') }}">Войти</a>
+                <a href="{{ url_for('register') }}">Регистрация</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="menu-buttons">
+        <a href="{{ url_for('home') }}" class="menu-btn map-btn">
+            <img src="{{ url_for('static', filename='images/home.png') }}" alt="Главная" class="icon home-icon">
+            Главная
+        </a>
+
+        <div class="search-container">
+            <form method="GET" action="{{ url_for('show_map') }}" class="search-form">
+                <input class="search-input" type="text" name="search" placeholder="Поиск на карте..."
+                       value="{{ search_query|default('') }}">
+                <button class="search-btn menu-btn" type="submit">
+                    <img src="{{ url_for('static', filename='images/search.png') }}" alt="Поиск" class="icon">
+                </button>
+            </form>
+        </div>
+        <select class="menu-btn" onchange="filterPosts('tag', this.value)">
+            <option value="">Все категории</option>
+            {% for tag in tags %}
+                <option value="{{ tag.name }}" {% if tag.name == selected_tag %}selected{% endif %}>
+                    {{ tag.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="map-wrapper">
+    <div class="map-header">
+        <h2>Карта:</h2>
+    </div>
+    <div id="map"
+         style="width: 92%; margin-left: 55px; margin-right: 55px; height: 90vh; border-radius: 14px; overflow: hidden;"></div>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=YOUR_API_KEY&lang=ru_RU"></script>
+<script>
+    ymaps.ready(init);
+
+    function init() {
+        var myMap = new ymaps.Map("map", {
+            center: [53.9, 27.5667],
+            zoom: 7
+        });
+
+        {% for event in events %}
+            {% if event.lat and event.lng %}
+            var placemark{{ event.id }} = new ymaps.Placemark([{{ event.lat }}, {{ event.lng }}], {
+                hintContent: '{{ event.title }}',
+                balloonContent: `
+                    <h3>{{ event.title }}</h3>
+                    <p>{{ event.description|truncate(100) }}</p>
+                    <p>Место: {{ event.location }}</p>
+                    <p>Тип: {{ event.event_type }}</p>
+                `
+            });
+            myMap.geoObjects.add(placemark{{ event.id }});
+            {% endif %}
+        {% endfor %}
+    }
+</script>
+</body>
+</html>

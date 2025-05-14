@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Добавить мероприятие</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .auth-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%),
+            repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .auth-container {
+            position: relative;
+            width: 380px;
+            padding: 30px;
+            background: linear-gradient(180deg, #252234 0%, #7366C0 28.5%, #36305A 57%, #242234 91.32%);
+            border-radius: 12.8px;
+            box-shadow: 0px 3.2px 13.6px rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-form-container {
+            background: #000000;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .auth-form {
+            position: relative;
+            width: 100%;
+        }
+
+        .auth-title {
+            font-family: 'Abel', sans-serif;
+            font-size: 24px;
+            text-align: center;
+            text-transform: uppercase;
+            color: #FFFFFF;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            font-family: 'Lora', serif;
+            font-size: 12px;
+            color: #FFFFFF;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-input, .form-textarea, .form-select, .form-file {
+            width: 100%;
+            height: 40px;
+            background: #533F6A;
+            border: 1px solid #533F6A;
+            border-radius: 7px;
+            padding: 0 15px;
+            color: #FFFFFF;
+            font-family: 'Lora', serif;
+            font-size: 14px;
+            box-sizing: border-box;
+            margin-bottom: 5px;
+        }
+
+        .form-textarea {
+            height: 100px;
+            padding: 10px 15px;
+            resize: vertical;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 15px;
+        }
+
+        .custom-combobox {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .custom-combobox-toggle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 30px;
+            background: #634F7A;
+            border: none;
+            border-radius: 0 7px 7px 0;
+            cursor: pointer;
+        }
+
+        .custom-combobox-input {
+            width: 100%;
+            height: 40px;
+            padding: 0 15px;
+            background: #533F6A;
+            border: 1px solid #533F6A;
+            border-radius: 7px;
+            color: #FFFFFF;
+            font-family: 'Lora', serif;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .custom-combobox-input:focus {
+            outline: none;
+            border-color: #7366C0;
+        }
+
+        .custom-combobox-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            width: 100%;
+            max-height: 200px;
+            margin: 2px 0 0;
+            padding: 0;
+            background: #533F6A;
+            border: 1px solid #7366C0;
+            border-radius: 7px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            list-style: none;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .custom-combobox-menu li {
+            padding: 8px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .custom-combobox-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .custom-combobox-menu li:hover {
+            background: #634F7A;
+        }
+
+        .custom-combobox-menu li.selected {
+            background: #7366C0;
+        }
+
+        .tag-pill {
+            display: inline-block;
+            background: #7366C0;
+            color: white;
+            padding: 3px 8px;
+            margin: 2px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .form-file {
+            padding: 8px 15px;
+        }
+
+        .submit-btn, .menu-btn {
+            background: #533F6A;
+            border: 1px solid #533F6A;
+            color: #FFFFFF;
+        }
+
+        .submit-btn {
+            width: 100%;
+            height: 40px;
+            border-radius: 7px;
+            font-family: 'Abel', sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover, .menu-btn:hover {
+            background: #634F7A;
+        }
+
+        .error-message {
+            color: #ff6200;
+            font-size: 12px;
+            margin-top: 5px;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .header {
+            background: transparent;
+            border-bottom: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .menu-btn {
+            padding: 10px 15px;
+            border-radius: 7px;
+            font-family: 'Abel', sans-serif;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <a href="{{ url_for('home') }}" class="menu-btn">На главную</a>
+</div>
+<div class="auth-wrapper">
+    <div class="auth-container">
+        <div class="auth-form-container">
+            <h2 class="auth-title">Добавить мероприятие</h2>
+            {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
+            <form method="POST" enctype="multipart/form-data" class="auth-form">
+                <div class="form-group">
+                    <label for="title">Название:</label>
+                    <input class="form-input" type="text" name="title" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Описание:</label>
+                    <textarea class="form-textarea" name="description" id="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="format">Формат:</label>
+                    <select class="form-select" name="format" id="format" required>
+                        <option value="online">Онлайн</option>
+                        <option value="offline">Офлайн</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="location">Место проведения:</label>
+                    <input class="form-input" type="text" name="location" id="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="date_time">Дата и время:</label>
+                    <input class="form-input" type="datetime-local" name="date_time" id="date_time" required>
+                </div>
+                <div class="form-group">
+                    <label for="duration">Продолжительность (в минутах):</label>
+                    <input class="form-input" type="number" name="duration" id="duration" required>
+                </div>
+                <div class="form-group">
+                    <label for="lat">Широта:</label>
+                    <input class="form-input" type="number" step="any" name="lat" id="lat">
+                </div>
+                <div class="form-group">
+                    <label for="lng">Долгота:</label>
+                    <input class="form-input" type="number" step="any" name="lng" id="lng">
+                </div>
+                <div class="form-group">
+                    <label for="event_type">Тип мероприятия:</label>
+                    <input class="form-input" type="text" name="event_type" id="event_type" required>
+                </div>
+                <div class="form-group">
+                    <label>Выберите теги:</label>
+                    {% for tag in tags %}
+                        <label>
+                            <input type="checkbox" name="tags" value="{{ tag.id }}">
+                            {{ tag.name }}
+                        </label><br>
+                    {% endfor %}
+                </div>
+
+                {#<div class="form-group">
+                    <label>Теги:</label>
+                    <div class="custom-combobox">
+                        <input type="text" class="custom-combobox-input" id="tags-input" placeholder="Выберите теги"
+                               readonly>
+                        <button type="button" class="custom-combobox-toggle">▼</button>
+                        <ul class="custom-combobox-menu">
+                            {% for tag in tags %}
+                                <li data-value="{{ tag.id }}">{{ tag.name }}</li>
+                            {% endfor %}
+                        </ul>
+                        <input type="hidden" name="tags" id="tags">
+                    </div>
+                    <div id="selected-tags" style="margin-top: 5px;"></div>
+                </div>#}
+                <div class="form-group">
+                    <label for="image">Изображение:</label>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+                <button type="submit" class="submit-btn">Добавить</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const combobox = document.querySelector('.custom-combobox');
+        const input = document.querySelector('.custom-combobox-input');
+        const toggle = document.querySelector('.custom-combobox-toggle');
+        const menu = document.querySelector('.custom-combobox-menu');
+        const hiddenInput = document.getElementById('tags');
+        const selectedTagsContainer = document.getElementById('selected-tags');
+
+        let selectedTags = [];
+
+        toggle.addEventListener('click', function () {
+            if (menu.style.display === 'block') {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        });
+
+        menu.querySelectorAll('li').forEach(item => {
+            item.addEventListener('click', function () {
+                const value = this.getAttribute('data-value');
+                const text = this.textContent;
+
+                if (!selectedTags.some(tag => tag.value === value)) {
+                    selectedTags.push({value, text});
+                    updateSelectedTags();
+                    updateHiddenInput();
+                }
+
+                closeMenu();
+            });
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!combobox.contains(e.target)) {
+                closeMenu();
+            }
+        });
+
+        function openMenu() {
+            menu.style.display = 'block';
+            toggle.textContent = '▲';
+        }
+
+        function closeMenu() {
+            menu.style.display = 'none';
+            toggle.textContent = '▼';
+        }
+
+        function updateSelectedTags() {
+            selectedTagsContainer.innerHTML = '';
+            selectedTags.forEach(tag => {
+                const pill = document.createElement('span');
+                pill.className = 'tag-pill';
+                pill.textContent = tag.text;
+
+                const removeBtn = document.createElement('span');
+                removeBtn.textContent = ' ×';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.style.marginLeft = '5px';
+                removeBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    selectedTags = selectedTags.filter(t => t.value !== tag.value);
+                    updateSelectedTags();
+                    updateHiddenInput();
+                });
+
+                pill.appendChild(removeBtn);
+                selectedTagsContainer.appendChild(pill);
+            });
+        }
+
+        function updateHiddenInput() {
+            hiddenInput.value = selectedTags.map(tag => tag.value).join(',');
+        }
+    });
+</script>
+</body>
+</html>
