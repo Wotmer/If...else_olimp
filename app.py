@@ -3,6 +3,8 @@ from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from datetime import datetime
+from sqlalchemy.orm import joinedload
+from jinja2 import Environment
 import os
 from werkzeug.utils import secure_filename
 import folium
@@ -17,6 +19,9 @@ app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 Session(app)
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
+env = Environment()
+env.filters['datetime_format'] = lambda dt: dt.strftime('%d.%m.%Y %H:%M') if dt else ''
+app.jinja_env.filters['datetime_format'] = env.filters['datetime_format']
 
 
 # Модель пользователя
@@ -109,10 +114,11 @@ with app.app_context():
                 "location": "ул. Ленина, 10, Минск",
                 "date_time": datetime(2024, 11, 15, 19, 0),
                 "duration": 120,
-                "lat": 53.9,
-                "lng": 27.5667,
+                "lat": 53.9007393,
+                "lng": 27.5558223,
                 "event_type": "Концерт",
-                "tags": ["музыка", "концерт"]
+                "tags": ["музыка", "концерт"],
+                "image": "../static/images/event1.png"
             },
             {
                 "title": "Выставка картин",
@@ -121,10 +127,11 @@ with app.app_context():
                 "location": "ул. Советская, 5, Гродно",
                 "date_time": datetime(2024, 11, 20, 10, 0),
                 "duration": 180,
-                "lat": 53.6833,
-                "lng": 23.8333,
+                "lat": 53.6788563,
+                "lng": 23.827121,
                 "event_type": "Выставка",
-                "tags": ["искусство", "культура"]
+                "tags": ["искусство", "культура"],
+                "image": "../static/images/event2.png"
             }
         ]
         for event_data in events:
@@ -148,6 +155,18 @@ with app.app_context():
                     db.session.add(EventTag(event_id=event.id, tag_id=tag.id))
     db.session.commit()
 
+    concert = Event.query.filter_by(title='Концерт в Минске').first()
+    if concert:
+        concert.lat = 53.90297238393145
+        concert.lng = 27.555303865441697
+        db.session.commit()
+
+    exhibition = Event.query.filter_by(title='Выставка картин').first()
+    if exhibition:
+        exhibition.lat = 53.67958056885761
+        exhibition.lng = 23.83001131069645
+        db.session.commit()
+
 
 # Вспомогательная функция для проверки расширения файла
 def allowed_file(filename):
@@ -167,10 +186,14 @@ def home():
             Event.is_active == True
         ).all()
     elif search_query:
+        search_query_lower = f'%{search_query.lower()}%'
         events = Event.query.join(EventTag, isouter=True).join(Tag, isouter=True).filter(
-            Event.title.ilike(f'%{search_query}%'),
+            (db.func.lower(Event.title).like(search_query_lower) |
+             db.func.lower(Event.description).like(search_query_lower) |
+             db.func.lower(Event.location).like(search_query_lower) |
+             db.func.lower(Event.event_type).like(search_query_lower)),
             Event.is_active == True
-        ).all()
+        ).distinct().all()
     else:
         events = Event.query.filter_by(is_active=True).all()
 
@@ -386,6 +409,49 @@ def add_tag():
             db.session.commit()
         return redirect(url_for('home'))
     return render_template('add_tag.html')
+
+
+@app.route('/organizer/<int:organizer_id>')
+def organizer_profile(organizer_id):
+    try:
+        organizer = db.session.query(User).options(
+            joinedload(User.subscribers)
+        ).get(organizer_id)
+
+        if not organizer:
+            flash('Пользователь не найден', 'error')
+            return redirect(url_for('home'))
+
+        if organizer.role != 'organizer':
+            flash('Этот пользователь не является организатором', 'info')
+            return redirect(url_for('home'))
+
+        events = db.session.query(Event).filter(
+            Event.organizer_id == organizer_id,
+            Event.is_active == True
+        ).order_by(Event.date_time.desc()).all()
+
+        is_subscribed = False
+        if 'username' in session:
+            current_user = User.query.filter_by(username=session['username']).first()
+            if current_user:
+                is_subscribed = db.session.query(Subscription).filter(
+                    Subscription.user_id == current_user.id,
+                    Subscription.organizer_id == organizer_id
+                ).first() is not None
+
+        return render_template(
+            'organizer_profile.html',
+            organizer=organizer,
+            events=events,
+            subscribers_count=len(organizer.subscribers),
+            is_subscribed=is_subscribed
+        )
+
+    except Exception as e:
+        app.logger.error(f"Error in organizer_profile: {str(e)}")
+        flash('Произошла ошибка при загрузке страницы', 'error')
+        return redirect(url_for('home'))
 
 
 if __name__ == '__main__':

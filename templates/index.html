@@ -55,7 +55,6 @@
                 {% endfor %}
             </select>
         </form>
-
     </div>
 </div>
 
@@ -70,15 +69,33 @@
                     '{{ post.title }}',
                     '{{ post.description }}',
                     '{{ post.location }}',
-                    '{{ post.tags|map(attribute='name')|join(', ') }}',
+                    '{{ post.tags|map(attribute="name")|join(", ") }}',
                     '{{ post.event_type }}',
-                    '{{ post.location }}',
                     {{ post.lat|default(0) }},
                     {{ post.lng|default(0) }},
-                    '{{ post.image_url|default('https://via.placeholder.com/200x200?text=Image+Not+Found') }}'
+                    {% if post.title == 'Концерт в Минске' %}
+                        '{{ url_for("static", filename="images/event1.png") }}',
+                    {% elif post.title == 'Выставка картин' %}
+                        '{{ url_for("static", filename="images/event2.png") }}',
+                    {% elif post.image_url %}
+                        '{{ url_for("static", filename="uploads/" + post.image_url.split("/")[-1]) }}',
+                    {% else %}
+                        '{{ url_for("static", filename="images/default-event.jpg") }}',
+                    {% endif %}
+                    '{{ post.organizer.username }}',
+                    {{ post.organizer.id }},
+                    '{{ post.date_time.strftime("%Y-%m-%d %H:%M") }}'
                     )">
                 <img class="post-image"
-                     src="{{ url_for('static', filename='uploads/' + ['win.png', 'gallery.png', 'circus.png'][loop.index0]) }}"
+                     src="{% if post.title == 'Концерт в Минске' %}
+                             {{ url_for('static', filename='images/event1.png') }}
+                          {% elif post.title == 'Выставка картин' %}
+                             {{ url_for('static', filename='images/event2.png') }}
+                          {% elif post.image_url %}
+                             {{ url_for('static', filename='uploads/' + post.image_url.split('/')[-1]) }}
+                          {% else %}
+                             {{ url_for('static', filename='images/default-event.jpg') }}
+                          {% endif %}"
                      alt="{{ post.title }}">
                 <div class="post-content">
                     <h3>{{ post.title }}</h3>
@@ -88,7 +105,29 @@
                     </p>
                     <p>Тип мероприятия: {{ post.event_type }}</p>
                     <p>Адрес: {{ post.location }}</p>
+                    <p>
+                        Организатор:
+                        <a href="{{ url_for('organizer_profile', organizer_id=post.organizer.id) }}"
+                           class="organizer-link"
+                           onclick="event.stopPropagation()"
+                           style="color: #9BB8FF; text-decoration: none;">
+                            {{ post.organizer.username }}
+                        </a>
+                    </p>
                 </div>
+                {% if session.username and session.role == 'participant' and post.organizer.id != user.id %}
+                    <div class="subscribe-btn-container">
+                        {% if user.id in post.organizer.subscribers|map(attribute='user_id') %}
+                            <form action="{{ url_for('subscribe', organizer_id=post.organizer.id) }}" method="POST">
+                                <button type="submit" class="unsubscribe-btn">Отписаться</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('subscribe', organizer_id=post.organizer.id) }}" method="POST">
+                                <button type="submit" class="subscribe-btn">Подписаться</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
@@ -97,15 +136,21 @@
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="hideModal()">×</span>
-            <img id="modal-image" class="modal-image" src="" alt="Изображение мероприятия">
+            <img id="modal-image" class="modal-image"
+                 src="{{ url_for('static', filename='images/default-event.jpg') }}"
+                 alt="Изображение мероприятия">
             <div class="modal-details">
                 <h2 id="modal-title"></h2>
                 <p id="modal-description"></p>
                 <p><strong>Место:</strong> <span id="modal-location"></span></p>
-                <p><strong>Адрес:</strong> <span id="modal-address"></span></p>
+                <p><strong>Дата:</strong> <span id="modal-date"></span></p>
                 <p><strong>Теги:</strong> <span id="modal-tags"></span></p>
-                <p><strong>Тип мероприятия:</strong> <span id="modal-event-type"></span></p>
-                <div id="delete-form-container"></div>
+                <p><strong>Тип:</strong> <span id="modal-event-type"></span></p>
+                <p><strong>Организатор:</strong>
+                    <a id="modal-organizer-link" href="#" class="organizer-link">
+                        <span id="modal-organizer"></span>
+                    </a>
+                </p>
             </div>
         </div>
     </div>

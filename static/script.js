@@ -73,3 +73,40 @@ function switchForm(type) {
     register.classList.add('active');
   }
 }
+
+function showModal(title, description, location, tags, eventType, lat, lng, imageUrl, organizerName, organizerId, eventDate) {
+    const modalImage = document.getElementById('modal-image');
+    modalImage.src = imageUrl;
+
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-description').innerText = description;
+    document.getElementById('modal-location').innerText = location;
+    document.getElementById('modal-date').innerText = new Date(eventDate).toLocaleString();
+    document.getElementById('modal-tags').innerText = tags;
+    document.getElementById('modal-event-type').innerText = eventType;
+    document.getElementById('modal-organizer').innerText = organizerName;
+
+    const organizerLink = document.getElementById('modal-organizer-link');
+    organizerLink.href = `/organizer/${organizerId}`;
+
+    document.getElementById('modal').style.display = 'block';
+}
+
+function hideModal() {
+    document.getElementById('modal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('modal');
+    if (event.target == modal) {
+        hideModal();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.organizer-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+});

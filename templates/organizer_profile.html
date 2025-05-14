@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль организатора - {{ organizer.username }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<div class="header">
+    <!-- Пользовательское меню -->
+    <div class="user-container" id="userContainer">
+        <div class="user-circle"></div>
+        {% if session.username %}
+            <div class="user-menu" id="userMenu">
+                <a href="{{ url_for('logout') }}">Выйти</a>
+                <a href="{{ url_for('register') }}">Сменить аккаунт</a>
+                {% if session.role == 'organizer' %}
+                    <a href="{{ url_for('add_event') }}">Добавить мероприятие</a>
+                    <a href="{{ url_for('add_tag') }}">Добавить тег</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="user-menu" id="userMenu">
+                <a href="{{ url_for('login') }}">Войти</a>
+                <a href="{{ url_for('register') }}">Регистрация</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Меню и поиск -->
+    <div class="menu-buttons">
+        <a href="{{ url_for('home') }}" class="menu-btn map-btn">
+            <img src="{{ url_for('static', filename='images/home.png') }}" alt="Главная" class="icon">
+            Главная
+        </a>
+
+        <a href="{{ url_for('show_map') }}" class="menu-btn map-btn">
+            <img src="{{ url_for('static', filename='images/map.png') }}" alt="Карта" class="icon">
+            Карта
+        </a>
+    </div>
+</div>
+
+<div class="posts-wrapper">
+    <div class="posts-header">
+        <h2>Профиль организатора</h2>
+    </div>
+    {% if not organizer %}
+        <div class="error-message">
+            Организатор не найден
+            <a href="{{ url_for('home') }}">Вернуться на главную</a>
+        </div>
+    {% else %}
+        <div class="organizer-header" style="margin: 30px 55px;">
+            <div class="organizer-avatar">
+                {{ organizer.username[0]|upper }}
+            </div>
+            <div class="organizer-info">
+                <h1>{{ organizer.username }}</h1>
+                <p class="role-badge">Организатор</p>
+
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">{{ events|length }}</span>
+                        <span class="stat-label">Мероприятий</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">{{ subscribers_count }}</span>
+                        <span class="stat-label">Подписчиков</span>
+                    </div>
+                </div>
+
+                {% if 'username' in session and session['username'] != organizer.username %}
+                    <form action="{{ url_for('subscribe', organizer_id=organizer.id) }}" method="POST">
+                        <button type="submit" class="{{ 'unsubscribe' if is_subscribed else 'subscribe' }}-btn">
+                            {{ 'Отписаться' if is_subscribed else 'Подписаться' }}
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="posts-header" style="margin: 40px 0 20px 55px;">
+            <h2>Мероприятия</h2>
+        </div>
+        {% if events %}
+            <div class="posts-container">
+                {% for event in events %}
+                    <div class="post" onclick="showModal(
+                            '{{ event.title }}',
+                            '{{ event.description }}',
+                            '{{ event.location }}',
+                            '{{ event.tags|map(attribute="name")|join(", ") }}',
+                            '{{ event.event_type }}',
+                            {{ event.lat|default(0) }},
+                            {{ event.lng|default(0) }},
+                            {% if event.title == 'Концерт в Минске' %}
+                                '{{ url_for("static", filename="images/event1.png") }}',
+                            {% elif event.title == 'Выставка картин' %}
+                                '{{ url_for("static", filename="images/event2.png") }}',
+                            {% elif event.image_url %}
+                                '{{ url_for("static", filename="uploads/" + event.image_url.split("/")[-1]) }}',
+                            {% else %}
+                                '{{ url_for("static", filename="images/default-event.jpg") }}',
+                            {% endif %}
+                            '{{ organizer.username }}',
+                            {{ organizer.id }},
+                            '{{ event.date_time.strftime("%Y-%m-%d %H:%M") }}'
+                            )">
+                        <img class="post-image"
+                             src="{% if event.title == 'Концерт в Минске' %}
+                             {{ url_for('static', filename='images/event1.png') }}
+                          {% elif event.title == 'Выставка картин' %}
+                             {{ url_for('static', filename='images/event2.png') }}
+                          {% elif event.image_url %}
+                             {{ url_for('static', filename='uploads/' + event.image_url.split('/')[-1]) }}
+                          {% else %}
+                             {{ url_for('static', filename='images/default-event.jpg') }}
+                          {% endif %}"
+                             alt="{{ event.title }}">
+                        <div class="post-content">
+                            <h3>{{ event.title }}</h3>
+                            <p>{{ event.description|truncate(100) }}</p>
+                            <p class="tags" style="color: #9BB8FF; font-weight: bold;">
+                                Теги: {{ event.tags|map(attribute='name')|join(', ') }}
+                            </p>
+                            <p>Тип мероприятия: {{ event.event_type }}</p>
+                            <p>Адрес: {{ event.location }}</p>
+                            <p>Дата: {{ event.date_time.strftime("%d.%m.%Y %H:%M") }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-events" style="text-align: center; font-size: 24px; margin: 50px 0;">Нет мероприятий</p>
+        {% endif %}
+    {% endif %}
+
+    <!-- Модальное окно для мероприятия -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="hideModal()">×</span>
+            <img id="modal-image" class="modal-image"
+                 src="{{ url_for('static', filename='images/default-event.jpg') }}"
+                 alt="Изображение мероприятия">
+            <div class="modal-details">
+                <h2 id="modal-title"></h2>
+                <p id="modal-description"></p>
+                <p><strong>Место:</strong> <span id="modal-location"></span></p>
+                <p><strong>Дата:</strong> <span id="modal-date"></span></p>
+                <p><strong>Теги:</strong> <span id="modal-tags"></span></p>
+                <p><strong>Тип:</strong> <span id="modal-event-type"></span></p>
+                <p><strong>Организатор:</strong>
+                    <a id="modal-organizer-link" href="#" class="organizer-link">
+                        <span id="modal-organizer"></span>
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

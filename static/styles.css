@@ -331,3 +331,296 @@ body {
     gap: 10px;
     margin-top: 15px;
 }
+
+.subscribe-btn, .unsubscribe-btn {
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.subscribe-btn {
+    background-color: #3725C1;
+    color: white;
+}
+
+.unsubscribe-btn {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.subscribe-btn:hover {
+    background-color: #4d3ad9;
+}
+
+.unsubscribe-btn:hover {
+    background-color: #ff6666;
+}
+
+.subscribe-btn-container {
+    margin-top: 15px;
+}
+
+.organizer-header {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.organizer-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #3725C1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.organizer-info h1 {
+    margin: 0;
+    color: #9BB8FF;
+}
+
+.role-badge {
+    display: inline-block;
+    background: #4835DB;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.stat {
+    background: rgba(55, 37, 193, 0.1);
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+.stat-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #9BB8FF;
+}
+
+.stat-label {
+    display: block;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.subscribe-btn, .unsubscribe-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.subscribe-btn {
+    background: #3725C1;
+    color: white;
+}
+
+.unsubscribe-btn {
+    background: #ff4d4d;
+    color: white;
+}
+
+.events-section {
+    margin-top: 40px;
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.event-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    transition: transform 0.2s;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.event-description {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 10px 0;
+}
+
+.event-date {
+    color: #9BB8FF;
+    font-size: 14px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    overflow: auto;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    margin: 5% auto;
+    padding: 30px;
+    width: 70%;
+    max-width: 800px;
+    border-radius: 15px;
+    display: flex;
+    gap: 30px;
+    position: relative;
+}
+
+.modal-image {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid #4835DB;
+}
+
+.modal-details {
+    flex: 1;
+    color: #ffffff;
+}
+
+.modal-details h2 {
+    color: #9BB8FF;
+    margin-top: 0;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 28px;
+    color: #9BB8FF;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #ffffff;
+}
+
+.organizer-header {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    align-items: center;
+}
+
+.organizer-info h1 {
+    margin: 0;
+    color: #9BB8FF;
+}
+
+.role-badge {
+    display: inline-block;
+    background: #4835DB;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.stat {
+    background: rgba(55, 37, 193, 0.1);
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+.stat-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #9BB8FF;
+}
+
+.stat-label {
+    display: block;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.subscribe-btn, .unsubscribe-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.subscribe-btn {
+    background: #3725C1;
+    color: white;
+}
+
+.unsubscribe-btn {
+    background: #ff4d4d;
+    color: white;
+}
+
+.events-section {
+    margin-top: 40px;
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.event-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.event-description {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 10px 0;
+}
+
+.event-date {
+    color: #9BB8FF;
+    font-size: 14px;
+}
