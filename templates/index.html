@@ -15,6 +15,7 @@
             <div class="user-menu" id="userMenu">
                 <a href="{{ url_for('logout') }}">Выйти</a>
                 <a href="{{ url_for('register') }}">Сменить аккаунт</a>
+                <a href="{{ url_for('user_preferences') }}">Мои интересы</a>
                 {% if session.role == 'organizer' %}
                     <a href="{{ url_for('add_event') }}">Добавить мероприятие</a>
                     <a href="{{ url_for('add_tag') }}">Добавить тег</a>
@@ -58,10 +59,92 @@
     </div>
 </div>
 
+<!-- Секция рекомендаций -->
+{% if session.username and recommended_events %}
+    <div class="posts-wrapper">
+        <div style="display: flex; align-items: center; margin: 10px 0 31px 55px;">
+            <div class="posts-header" style="width: 15%; padding: 15px 25px; margin: 0; text-align: center;">
+                <h2 style="margin: 0; white-space: nowrap; color: #9BB8FF; font-size: 28px; font-weight: 700;">
+                    Рекомендации:</h2>
+            </div>
+            <a href="{{ url_for('user_preferences') }}" class="menu-btn"
+               style="background: #3725C1; height: auto; min-width: auto; padding: 20px 20px; margin-left: 30px; border-radius: 14px; font-size: 17px;">
+                Настроить интересы
+            </a>
+        </div>
+        <div class="posts-container">
+            {% for event in recommended_events %}
+                <div class="post" onclick="showModal(
+                        '{{ event.title }}',
+                        '{{ event.description }}',
+                        '{{ event.location }}',
+                        '{{ event.tags|map(attribute="name")|join(", ") }}',
+                        '{{ event.event_type }}',
+                        {{ event.lat|default(0) }},
+                        {{ event.lng|default(0) }},
+                        '{% if event.title == "Концерт в Минске" %}{{ url_for("static", filename="images/event1.png") }}{% elif event.title == "Выставка картин" %}{{ url_for("static", filename="images/event2.png") }}{% elif event.image_url %}{{ url_for("static", filename="uploads/" + event.image_url.split("/")[-1]) }}{% else %}{{ url_for("static", filename="images/default-event.jpg") }}{% endif %}',
+                        '{{ event.organizer.username }}',
+                        {{ event.organizer.id }},
+                        '{{ event.date_time.strftime("%Y-%m-%d %H:%M") }}',
+                        {{ event.id }}
+                        )">
+                    <img class="post-image"
+                         src="{% if event.title == 'Концерт в Минске' %}
+                             {{ url_for('static', filename='images/event1.png') }}
+                          {% elif event.title == 'Выставка картин' %}
+                             {{ url_for('static', filename='images/event2.png') }}
+                          {% elif event.image_url %}
+                             {{ url_for('static', filename='uploads/' + event.image_url.split('/')[-1]) }}
+                          {% else %}
+                             {{ url_for('static', filename='images/default-event.jpg') }}
+                          {% endif %}"
+                         alt="{{ event.title }}">
+
+                    <div class="post-content">
+                        <h3>{{ event.title }}</h3>
+                        <p>{{ event.description|truncate(100) }}</p>
+                        <p><strong>Рейтинг:</strong>
+                            <span class="rating">
+                            {% for i in range(5) %}
+                                {% if i < (event.avg_rating|int) %}
+                                    <span class="star filled">★</span>
+                                {% else %}
+                                    <span class="star">☆</span>
+                                {% endif %}
+                            {% endfor %}
+                                ({{ "%.1f"|format(event.avg_rating) }})
+                        </span>
+                        </p>
+                        <p class="tags" style="color: #9BB8FF; font-weight: bold;">
+                            Теги: {{ event.tags|map(attribute='name')|join(', ') }}
+                        </p>
+                        <p>Тип мероприятия: {{ event.event_type }}</p>
+                        <p>Адрес: {{ event.location }}</p>
+                        <p>
+                            Организатор:
+                            <a href="{{ url_for('organizer_profile', organizer_id=event.organizer.id) }}"
+                               onclick="event.stopPropagation();"
+                               style="color: #9BB8FF; text-decoration: none;">
+                                {{ event.organizer.username }}
+                            </a>
+                        </p>
+                        <p>
+                            <span style="color: #FFD700; font-style: italic;">Рекомендовано на основе ваших интересов</span>
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
 <!-- Список мероприятий -->
 <div class="posts-wrapper">
-    <div class="posts-header">
-        <h2>Мероприятия:</h2>
+    <div style="display: flex; align-items: center; margin: 10px 0 31px 55px;">
+        <div class="posts-header" style="width: 15%; padding: 15px 25px; margin: 0; text-align: center;">
+            <h2 style="margin: 0; white-space: nowrap; color: #9BB8FF; font-size: 28px; font-weight: 700;">
+                Мероприятия:</h2>
+        </div>
     </div>
     <div class="posts-container">
         {% for post in posts %}
@@ -73,18 +156,16 @@
                     '{{ post.event_type }}',
                     {{ post.lat|default(0) }},
                     {{ post.lng|default(0) }},
-                    {% if post.title == 'Концерт в Минске' %}
-                        '{{ url_for("static", filename="images/event1.png") }}',
-                    {% elif post.title == 'Выставка картин' %}
-                        '{{ url_for("static", filename="images/event2.png") }}',
-                    {% elif post.image_url %}
-                        '{{ url_for("static", filename="uploads/" + post.image_url.split("/")[-1]) }}',
-                    {% else %}
-                        '{{ url_for("static", filename="images/default-event.jpg") }}',
-                    {% endif %}
+                    '{% if post.title == "Концерт в Минске" %}{{ url_for("static", filename="images/event1.png") }}{% elif post.title == "Выставка картин" %}{{ url_for("static", filename="images/event2.png") }}{% elif post.image_url %}{{ url_for("static", filename="uploads/" + post.image_url.split("/")[-1]) }}{% else %}{{ url_for("static", filename="images/default-event.jpg") }}{% endif %}',
                     '{{ post.organizer.username }}',
                     {{ post.organizer.id }},
-                    '{{ post.date_time.strftime("%Y-%m-%d %H:%M") }}'
+                    '{{ post.date_time.strftime("%Y-%m-%d %H:%M") }}',
+                    {{ post.id }},
+                    {% if post.id in events_with_celebrities %}
+                        {{ events_with_celebrities[post.id]['celebrities']|tojson }}
+                    {% else %}
+                        null
+                    {% endif %}
                     )">
                 <img class="post-image"
                      src="{% if post.title == 'Концерт в Минске' %}
@@ -97,14 +178,49 @@
                              {{ url_for('static', filename='images/default-event.jpg') }}
                           {% endif %}"
                      alt="{{ post.title }}">
+
                 <div class="post-content">
                     <h3>{{ post.title }}</h3>
                     <p>{{ post.description|truncate(100) }}</p>
+                    <p><strong>Рейтинг:</strong>
+                        <span class="rating">
+                            {% for i in range(5) %}
+                                {% if i < (post.avg_rating|int) %}
+                                    <span class="star filled">★</span>
+                                {% else %}
+                                    <span class="star">☆</span>
+                                {% endif %}
+                            {% endfor %}
+                            ({{ "%.1f"|format(post.avg_rating) }})
+                        </span>
+                    </p>
                     <p class="tags" style="color: #9BB8FF; font-weight: bold;">
                         Теги: {{ post.tags|map(attribute='name')|join(', ') }}
                     </p>
                     <p>Тип мероприятия: {{ post.event_type }}</p>
                     <p>Адрес: {{ post.location }}</p>
+                    {% if post.id in events_with_celebrities %}
+                        <div class="event-celebrities">
+                            <p><strong>Участвуют:</strong></p>
+                            <div class="celebrities-list">
+                                {% for celebrity in events_with_celebrities[post.id]['celebrities'] %}
+                                    <div class="celebrity-item">
+                                        {% if celebrity.image %}
+                                            <img src="{{ celebrity.image }}" alt="{{ celebrity.name }}" class="celebrity-image">
+                                        {% else %}
+                                            <div class="celebrity-avatar">{{ celebrity.name[0] | upper }}</div>
+                                        {% endif %}
+                                        <div class="celebrity-info">
+                                            <div class="celebrity-name">{{ celebrity.name }}</div>
+                                            {% if celebrity.role %}
+                                                <div class="celebrity-role">{{ celebrity.role }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
                     <p>
                         Организатор:
                         <a href="{{ url_for('organizer_profile', organizer_id=post.organizer.id) }}"
@@ -115,6 +231,7 @@
                         </a>
                     </p>
                 </div>
+
                 {% if session.username and session.role == 'participant' and post.organizer.id != user.id %}
                     <div class="subscribe-btn-container">
                         {% if user.id in post.organizer.subscribers|map(attribute='user_id') %}
@@ -131,26 +248,60 @@
             </div>
         {% endfor %}
     </div>
+</div>
 
-    <!-- Модальное окно для мероприятия -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="hideModal()">×</span>
-            <img id="modal-image" class="modal-image"
-                 src="{{ url_for('static', filename='images/default-event.jpg') }}"
-                 alt="Изображение мероприятия">
-            <div class="modal-details">
-                <h2 id="modal-title"></h2>
-                <p id="modal-description"></p>
-                <p><strong>Место:</strong> <span id="modal-location"></span></p>
-                <p><strong>Дата:</strong> <span id="modal-date"></span></p>
-                <p><strong>Теги:</strong> <span id="modal-tags"></span></p>
-                <p><strong>Тип:</strong> <span id="modal-event-type"></span></p>
-                <p><strong>Организатор:</strong>
-                    <a id="modal-organizer-link" href="#" class="organizer-link">
-                        <span id="modal-organizer"></span>
-                    </a>
-                </p>
+<!-- Модальное окно для мероприятия -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="hideModal()">×</span>
+        <img id="modal-image" class="modal-image"
+             src="{{ url_for('static', filename='images/default-event.jpg') }}"
+             alt="Изображение мероприятия">
+        <div class="modal-details">
+            <h2 id="modal-title"></h2>
+            <p id="modal-description"></p>
+            <p><strong>Место:</strong> <span id="modal-location"></span></p>
+            <p><strong>Дата:</strong> <span id="modal-date"></span></p>
+            <p><strong>Теги:</strong> <span id="modal-tags"></span></p>
+            <p><strong>Тип:</strong> <span id="modal-event-type"></span></p>
+            <p><strong>Организатор:</strong>
+                <a id="modal-organizer-link" href="#" class="organizer-link">
+                    <span id="modal-organizer"></span>
+                </a>
+            </p>
+
+            <div id="modal-celebrities" class="modal-celebrities">
+            </div>
+
+            <div class="reviews-section">
+                <h3>Отзывы</h3>
+
+                <div id="event-reviews">
+                </div>
+
+                {% if session.username %}
+                    <div class="review-form">
+                        <h4>Оставить отзыв</h4>
+                        <form id="event-review-form" method="POST">
+                            <div class="rating-stars">
+                                <input type="radio" id="star5" name="rating" value="5">
+                                <label for="star5">&#9733;</label>
+                                <input type="radio" id="star4" name="rating" value="4">
+                                <label for="star4">&#9733;</label>
+                                <input type="radio" id="star3" name="rating" value="3">
+                                <label for="star3">&#9733;</label>
+                                <input type="radio" id="star2" name="rating" value="2">
+                                <label for="star2">&#9733;</label>
+                                <input type="radio" id="star1" name="rating" value="1">
+                                <label for="star1">&#9733;</label>
+                            </div>
+                            <textarea name="comment" placeholder="Ваш отзыв..."></textarea>
+                            <button type="submit" class="submit-review-btn">Отправить</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <p>Войдите, чтобы оставить отзыв</p>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -287,7 +287,24 @@
                         </label><br>
                     {% endfor %}
                 </div>
-
+<div class="form-group">
+    <label>Известные личности, принимающие участие:</label>
+    <div class="celebrities-container">
+        <div class="celebrity-list">
+            {% for celebrity in celebrities %}
+                <div class="celebrity-item">
+                    <input type="checkbox" id="celebrity-{{ celebrity.id }}" name="celebrities" value="{{ celebrity.id }}">
+                    <label for="celebrity-{{ celebrity.id }}">{{ celebrity.name }}</label>
+                    <div class="celebrity-role">
+                        <label for="role-{{ celebrity.id }}">Роль:</label>
+                        <input type="text" id="role-{{ celebrity.id }}" name="celebrity_roles" placeholder="Спикер, гость, ведущий...">
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <a href="{{ url_for('add_celebrity') }}" class="link-button">+ Добавить новую личность</a>
+</div>
                 {#<div class="form-group">
                     <label>Теги:</label>
                     <div class="custom-combobox">

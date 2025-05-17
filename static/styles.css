@@ -82,6 +82,14 @@ body {
     margin-right: 20px;
 }
 
+
+.org-menu-buttons {
+    display: flex;
+    gap: 80px;
+    align-items: center;
+    margin-right: 20px;
+}
+
 .menu-btn {
     display: flex;
     align-items: center;
@@ -178,23 +186,14 @@ body {
     vertical-align: middle;
 }
 
-.posts-wrapper {
-    width: calc(100% - 70px);
-    margin: 140px 15px;
-    background: rgba(0, 0, 0, 0.57);
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    min-height: 700px;
-}
-
+/* Улучшения для заголовков и кнопки настройки интересов */
 .posts-header {
     background: rgba(201, 201, 201, 0.22);
     width: 15%;
     border-radius: 19px;
     padding: 15px 25px;
     text-align: center;
-    margin: 10px 0 10px 55px;
+    margin: 10px 0 31px 55px;
 }
 
 .posts-header h2 {
@@ -203,6 +202,39 @@ body {
     color: #9BB8FF;
     margin: 0;
     font-weight: 700;
+}
+
+
+.settings-btn {
+    background: rgba(83, 63, 106, 0.7);
+    border-radius: 5px;
+    padding: 8px 12px;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    font-size: 14px;
+    margin-left: auto;
+    line-height: 1;
+}
+
+.settings-btn:hover {
+    background: rgba(99, 79, 122, 0.7);
+}
+
+.settings-btn img {
+    margin-right: 5px;
+}
+
+.posts-wrapper {
+    width: calc(100% - 70px);
+    margin: 140px 15px;
+    background: rgba(0, 0, 0, 0.57);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    min-height: 700px;
 }
 
 .posts-container {
@@ -223,7 +255,7 @@ body {
     transition: transform 0.2s ease;
     padding: 20px;
     align-items: flex-start;
-    height: 400px;
+    height: 500px;
     box-sizing: border-box;
 }
 
@@ -623,4 +655,487 @@ body {
 .event-date {
     color: #9BB8FF;
     font-size: 14px;
+}
+
+/* Стили для отзывов и рейтингов */
+.reviews-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #3A2D4B;
+}
+
+.reviews-container, #event-reviews {
+    margin-bottom: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.review-item {
+    background: rgba(83, 63, 106, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.reviewer-name {
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.rating {
+    display: inline-flex;
+    align-items: center;
+}
+
+.star {
+    color: #aaa;
+    font-size: 35px;
+    margin-right: 3px;
+}
+
+.star.filled {
+    color: #FFD700;
+}
+
+.review-date {
+    color: #aaa;
+    font-size: 12px;
+}
+
+.review-content {
+    color: #ffffff;
+    line-height: 1.5;
+}
+
+.review-form {
+    margin-top: 20px;
+    background: rgba(83, 63, 106, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.review-form h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #ffffff;
+}
+
+.rating-stars {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+.rating-stars input {
+    display: none;
+}
+
+.rating-stars label {
+    font-size: 25px;
+    color: #ccc;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.rating-stars input:checked ~ label,
+.rating-stars label:hover,
+.rating-stars label:hover ~ label {
+    color: #FFD700;
+}
+
+.review-form textarea {
+    width: 100%;
+    min-height: 80px;
+    background: #3A2D4B;
+    border: 1px solid #533F6A;
+    border-radius: 7px;
+    padding: 10px;
+    margin-bottom: 15px;
+    color: #ffffff;
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.submit-review-btn {
+    background: #533F6A;
+    border: 1px solid #533F6A;
+    color: #FFFFFF;
+    width: 100%;
+    height: 36px;
+    border-radius: 7px;
+    font-family: 'Abel', sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-review-btn:hover {
+    background: #634F7A;
+}
+
+.recommendations-container {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    scrollbar-width: thin;
+    scrollbar-color: #533F6A rgba(83, 63, 106, 0.2);
+    margin-top: -10px;
+}
+
+.recommendations-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.recommendations-container::-webkit-scrollbar-track {
+    background: rgba(83, 63, 106, 0.2);
+    border-radius: 4px;
+}
+
+.recommendations-container::-webkit-scrollbar-thumb {
+    background-color: #533F6A;
+    border-radius: 4px;
+}
+
+.recommendation-card {
+    background: rgba(83, 63, 106, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    min-width: 280px;
+    margin-right: 20px;
+}
+
+.recommendation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.recommendation-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+
+.recommendation-info {
+    padding: 15px;
+}
+
+.recommendation-info h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.recommendation-info p {
+    color: #eeeeee;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.recommendation-tags {
+    font-size: 12px;
+    color: #aaa;
+}
+
+.recommendation-reason {
+    display: block;
+    margin-top: 10px;
+    font-size: 12px;
+    font-style: italic;
+    color: #FFD700;
+}
+
+/* Стили для отзывов об организаторе */
+.organizer-reviews {
+    background: rgba(83, 63, 106, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.organizer-reviews h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #ffffff;
+    text-align: center;
+}
+
+/* Стили для блока настройки интересов */
+.preferences-container {
+    background: rgba(83, 63, 106, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.tags-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.tag-item {
+    background: rgba(83, 63, 106, 0.5);
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.tag-item label {
+    font-size: 16px;
+    color: #ffffff;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.interest-level {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.interest-slider {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.interest-slider input[type="range"] {
+    flex: 1;
+    height: 5px;
+    -webkit-appearance: none;
+    background: #3A2D4B;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.interest-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #FFD700;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.interest-value {
+    width: 20px;
+    color: #FFD700;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .posts-header {
+        width: calc(100% - 80px);
+        margin-left: 40px;
+        margin-right: 40px;
+        padding: 10px 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .posts-header h2 {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+    
+    .settings-btn {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+    .recommendations-container {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .review-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .review-date {
+        margin-top: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .recommendations-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.event-celebrities {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.celebrities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.celebrity-item {
+    display: flex;
+    align-items: center;
+    background: rgba(63, 51, 93, 0.5);
+    border-radius: 8px;
+    padding: 6px;
+    max-width: 100%;
+}
+
+.celebrity-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 8px;
+}
+
+.celebrity-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #5D4A8C;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.celebrity-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.celebrity-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.celebrity-role {
+    font-size: 12px;
+    color: #9bb8ff;
+    font-style: italic;
+}
+
+.modal-celebrities {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-celebrities h3 {
+    color: #9bb8ff;
+    margin-bottom: 10px;
+}
+
+.modal-celebrities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.modal-celebrity-item {
+    display: flex;
+    align-items: center;
+    background: rgba(63, 51, 93, 0.5);
+    border-radius: 10px;
+    padding: 8px 12px;
+    max-width: 100%;
+}
+
+.modal-celebrity-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.modal-celebrity-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #5D4A8C;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.modal-celebrity-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.modal-celebrity-role {
+    font-size: 14px;
+    color: #9bb8ff;
+    font-style: italic;
+}
+
+.celebrities-container {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.celebrity-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.celebrity-item {
+    background: rgba(63, 51, 93, 0.4);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.celebrity-item label {
+    display: inline-block;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+.celebrity-role {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.celebrity-role input {
+    width: 100%;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.2);
 }

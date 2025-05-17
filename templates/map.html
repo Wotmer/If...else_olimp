@@ -127,7 +127,18 @@
                     <p>{{ event.description|truncate(100) }}</p>
                     <p>Место: {{ event.location }}</p>
                     <p>Тип: {{ event.event_type }}</p>
+                    {% if event.id in events_with_celebrities %}
+                    <p><strong>С участием известных личностей!</strong></p>
+                    {% endif %}
                 `
+            }, {
+                {% if event.id in events_with_celebrities %}
+                preset: 'islands#starIcon',
+                iconColor: '#FFD700',
+                {% else %}
+                preset: 'islands#dotIcon',
+                iconColor: '#1E98FF'
+                {% endif %}
             });
             myMap.geoObjects.add(placemark{{ event.id }});
             {% endif %}
