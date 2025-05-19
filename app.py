@@ -11,6 +11,7 @@ import folium
 from sqlalchemy import or_, and_, case, func, desc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import select
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'x7k9p2m4n6b8v0c1z3q5w8e9r2t4y6u'
@@ -724,17 +725,31 @@ def get_event_reviews(event_id):
 
     return jsonify({'reviews': reviews_data})
 
-@app.route('/user_preferences', methods=['GET', 'POST'])
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/user/preferences', methods=['GET', 'POST'])
+@login_required
 def user_preferences():
-    if 'user_id' not in session:
+    if 'username' not in session:
         return redirect(url_for('login'))
     
-    user_id = session['user_id']
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        flash('Пользователь не найден, пожалуйста, войдите снова.', 'error')
+        return redirect(url_for('login'))
+    
+    user_id = user.id
     
     tags = Tag.query.all()
     
     user_interests = UserInterest.query.filter_by(user_id=user_id).all()
-    user_interests_dict = {interest.tag_id: interest.interest_level for interest in user_interests}
+    interest_levels = {interest.tag_id: interest.interest_level for interest in user_interests}
     
     if request.method == 'POST':
         UserInterest.query.filter_by(user_id=user_id).delete()
@@ -748,12 +763,12 @@ def user_preferences():
                     interest_level=int(interest_level)
                 )
                 db.session.add(new_interest)
-        
+
         db.session.commit()
         flash('Ваши интересы успешно обновлены!', 'success')
         return redirect(url_for('home'))
-    
-    return render_template('preferences.html', tags=tags, user_interests=user_interests_dict)
+
+    return render_template('preferences.html', tags=tags, interest_levels=interest_levels)
 
 @app.route('/add_celebrity', methods=['GET', 'POST'])
 def add_celebrity():

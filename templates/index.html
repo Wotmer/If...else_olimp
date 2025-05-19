@@ -86,7 +86,12 @@
                         '{{ event.organizer.username }}',
                         {{ event.organizer.id }},
                         '{{ event.date_time.strftime("%Y-%m-%d %H:%M") }}',
-                        {{ event.id }}
+                        {{ event.id }},
+                        {% if event.id in events_with_celebrities %}
+                            {{ events_with_celebrities[event.id]['celebrities']|tojson }}
+                        {% else %}
+                            null
+                        {% endif %}
                         )">
                     <img class="post-image"
                          src="{% if event.title == 'Концерт в Минске' %}
@@ -120,6 +125,29 @@
                         </p>
                         <p>Тип мероприятия: {{ event.event_type }}</p>
                         <p>Адрес: {{ event.location }}</p>
+                        {% if event.id in events_with_celebrities %}
+                            <div class="event-celebrities">
+                                <p><strong>Участвуют:</strong></p>
+                                <div class="celebrities-list">
+                                    {% for celebrity in events_with_celebrities[event.id]['celebrities'] %}
+                                        <div class="celebrity-item">
+                                            {% if celebrity.image %}
+                                                <img src="{{ celebrity.image }}" alt="{{ celebrity.name }}"
+                                                     class="celebrity-image">
+                                            {% else %}
+                                                <div class="celebrity-avatar">{{ celebrity.name[0] | upper }}</div>
+                                            {% endif %}
+                                            <div class="celebrity-info">
+                                                <div class="celebrity-name">{{ celebrity.name }}</div>
+                                                {% if celebrity.role %}
+                                                    <div class="celebrity-role">{{ celebrity.role }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
                         <p>
                             Организатор:
                             <a href="{{ url_for('organizer_profile', organizer_id=event.organizer.id) }}"
@@ -206,7 +234,8 @@
                                 {% for celebrity in events_with_celebrities[post.id]['celebrities'] %}
                                     <div class="celebrity-item">
                                         {% if celebrity.image %}
-                                            <img src="{{ celebrity.image }}" alt="{{ celebrity.name }}" class="celebrity-image">
+                                            <img src="{{ celebrity.image }}" alt="{{ celebrity.name }}"
+                                                 class="celebrity-image">
                                         {% else %}
                                             <div class="celebrity-avatar">{{ celebrity.name[0] | upper }}</div>
                                         {% endif %}

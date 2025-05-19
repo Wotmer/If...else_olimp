@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Настройка интересов</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<div class="header">
+    <!-- Пользовательское меню -->
+    <div class="user-container" id="userContainer">
+        <div class="user-circle"></div>
+        {% if session.username %}
+            <div class="user-menu" id="userMenu">
+                <a href="{{ url_for('logout') }}">Выйти</a>
+                <a href="{{ url_for('register') }}">Сменить аккаунт</a>
+                {% if session.role == 'organizer' %}
+                    <a href="{{ url_for('add_event') }}">Добавить мероприятие</a>
+                    <a href="{{ url_for('add_tag') }}">Добавить тег</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="user-menu" id="userMenu">
+                <a href="{{ url_for('login') }}">Войти</a>
+                <a href="{{ url_for('register') }}">Регистрация</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Меню и поиск -->
+    <div class="menu-buttons">
+        <a href="{{ url_for('home') }}" class="menu-btn map-btn">
+            <img src="{{ url_for('static', filename='images/home.png') }}" alt="Главная" class="icon">
+            Главная
+        </a>
+        
+        <a href="{{ url_for('show_map') }}" class="menu-btn map-btn">
+            <img src="{{ url_for('static', filename='images/map.png') }}" alt="Карта" class="icon">
+            Карта
+        </a>
+    </div>
+</div>
+
+<div class="posts-wrapper">
+    <div class="posts-header">
+        <h2>Настройка интересов</h2>
+    </div>
+    
+    <div class="preferences-container" style="padding: 30px 55px;">
+        <p style="margin-bottom: 20px;">Выберите категории и теги, которые вам интересны. Это поможет нам показывать подходящие мероприятия.</p>
+        
+        <form method="POST" action="{{ url_for('user_preferences') }}">
+            <div class="tags-selection">
+                {% for tag in tags %}
+                    <div class="tag-item">
+                        <input type="checkbox" id="tag-{{ tag.id }}" name="tags" value="{{ tag.id }}" 
+                               {% if tag.id in user_interests %}checked{% endif %}>
+                        <label for="tag-{{ tag.id }}">{{ tag.name }}</label>
+                        
+                        <div class="interest-level">
+                            <span>Уровень интереса:</span>
+                            <div class="interest-slider">
+                                <input type="range" min="1" max="5" value="{{ interest_levels.get(tag.id, 3) }}" 
+                                       name="interest_level_{{ tag.id }}" id="interest_level_{{ tag.id }}">
+                                <span class="interest-value" id="interest_value_{{ tag.id }}">
+                                    {{ interest_levels.get(tag.id, 3) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <button type="submit" class="submit-btn">Сохранить настройки</button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Обновление отображаемого значения при изменении ползунка
+    const sliders = document.querySelectorAll('input[type="range"]');
+    sliders.forEach(slider => {
+        const valueDisplay = document.getElementById('interest_value_' + slider.id.split('_')[2]);
+        slider.addEventListener('input', function() {
+            valueDisplay.textContent = this.value;
+        });
+    });
+    
+    // Переключение видимости блока настройки уровня интереса при выборе тега
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        const tagId = checkbox.id.split('-')[1];
+        const interestLevel = document.querySelector(`div.interest-level[data-tag-id="${tagId}"]`);
+        
+        if (interestLevel) {
+            interestLevel.style.display = checkbox.checked ? 'block' : 'none';
+            
+            checkbox.addEventListener('change', function() {
+                interestLevel.style.display = this.checked ? 'block' : 'none';
+            });
+        }
+    });
+});
+</script>
+
+</body>
+</html>

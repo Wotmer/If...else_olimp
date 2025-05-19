@@ -297,29 +297,14 @@
                     <label for="celebrity-{{ celebrity.id }}">{{ celebrity.name }}</label>
                     <div class="celebrity-role">
                         <label for="role-{{ celebrity.id }}">Роль:</label>
-                        <input type="text" id="role-{{ celebrity.id }}" name="celebrity_roles" placeholder="Спикер, гость, ведущий...">
+                        <input type="text" id="role-{{ celebrity.id }}" name="celebrity_roles" style="color: #FFFFFF" placeholder="Спикер, гость, ведущий...">
                     </div>
                 </div>
             {% endfor %}
         </div>
     </div>
-    <a href="{{ url_for('add_celebrity') }}" class="link-button">+ Добавить новую личность</a>
+    <a href="{{ url_for('add_celebrity') }}" class="link-button" style="color: #3F1368; text-decoration: none;">+ Добавить новую личность</a>
 </div>
-                {#<div class="form-group">
-                    <label>Теги:</label>
-                    <div class="custom-combobox">
-                        <input type="text" class="custom-combobox-input" id="tags-input" placeholder="Выберите теги"
-                               readonly>
-                        <button type="button" class="custom-combobox-toggle">▼</button>
-                        <ul class="custom-combobox-menu">
-                            {% for tag in tags %}
-                                <li data-value="{{ tag.id }}">{{ tag.name }}</li>
-                            {% endfor %}
-                        </ul>
-                        <input type="hidden" name="tags" id="tags">
-                    </div>
-                    <div id="selected-tags" style="margin-top: 5px;"></div>
-                </div>#}
                 <div class="form-group">
                     <label for="image">Изображение:</label>
                     <input type="file" name="image" accept="image/*">
